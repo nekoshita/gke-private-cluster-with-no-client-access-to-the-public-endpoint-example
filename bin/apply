@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+set -eu
+
+gcp_project_id=${1:?'set GCP project name as first argument'}
+gcs_buckect_name_for_tfstate=${2:?'set GCS Bucket name as second argument'}
+allowed_user_mail=${3:?'set allowed user mail address. ex) xxxx@gmail.com'}
+
+
+rm -rf .terraform
+
+terraform init -upgrade -backend-config="bucket=${gcs_buckect_name_for_tfstate}"
+
+terraform refresh \
+  -var="gcp_project_id=${gcp_project_id}" \
+  -var="allowed_user_mail=${allowed_user_mail}"
+  
+terraform apply -refresh=true \
+  -auto-approve \
+  -var="gcp_project_id=${gcp_project_id}" \
+  -var="allowed_user_mail=${allowed_user_mail}"
